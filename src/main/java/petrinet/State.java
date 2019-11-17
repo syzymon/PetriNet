@@ -1,5 +1,6 @@
 package petrinet;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +30,10 @@ public class State<T> {
 
                 transition.getInhibitorsStream()
                         .allMatch(forbiddenPlace -> getPlaceWeight(forbiddenPlace) == 0));
+    }
+
+    public boolean isAnyTransitionAllowed(Collection<Transition<T>> transitions) {
+        return transitions.stream().anyMatch(this::isTransitionAllowed);
     }
 
     protected void performStateTransition(Map<T, Integer> stateMap, Transition<T> transition) {

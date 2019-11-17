@@ -1,8 +1,8 @@
 package petrinet;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class CriticalState<T> extends State<T> {
     public CriticalState(Map<T, Integer> initial) {
@@ -11,7 +11,6 @@ public class CriticalState<T> extends State<T> {
     }
 
     public CriticalState(CriticalState<T> toCopy) {
-        // TODO: concurrency or mutex when copying or nothing???
         super(toCopy.weights);
     }
 
@@ -27,5 +26,21 @@ public class CriticalState<T> extends State<T> {
         performStateTransition(weights, transition);
         weights = filterZeros(weights);
         return this;
+    }
+
+
+    public Transition<T> executeFire(Collection<Transition<T>> transitions) {
+        var temporaryState = new CriticalState<>(weights);
+
+        Transition<T> allowedTransition = transitions.stream()
+                .filter(this::isTransitionAllowed)
+                .findFirst()
+                .orElseThrow(AssertionError::new);
+
+        temporaryState = temporaryState.next(allowedTransition);
+
+        setWeightsAfterTransition(temporaryState);
+
+        return allowedTransition;
     }
 }
