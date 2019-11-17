@@ -33,24 +33,27 @@ public class State<T> {
 
     protected void performStateTransition(Map<T, Integer> stateMap, Transition<T> transition) {
         assert isTransitionAllowed(transition);
-        transition.getInputEdgesEntryStream().forEach(edgeEntry ->
-                stateMap.put(edgeEntry.getKey(), stateMap.get(edgeEntry.getKey()) - edgeEntry.getValue())
-        );
+        transition.getInputEdgesEntryStream()
+                .forEach(edgeEntry ->
+                        stateMap.put(edgeEntry.getKey(), stateMap.get(edgeEntry.getKey()) - edgeEntry.getValue())
+                );
 
-        transition.getResetEdgesStream().forEach(stateMap::remove);
+        transition.getResetEdgesStream()
+                .forEach(stateMap::remove);
 
-        transition.getOutputEdgesEntryStream().forEach(edgeEntry ->
-                stateMap.put(
-                        edgeEntry.getKey(),
-                        stateMap.getOrDefault(edgeEntry.getKey(), 0) + edgeEntry.getValue()
-                )
-        );
+        transition.getOutputEdgesEntryStream().
+                forEach(edgeEntry ->
+                        stateMap.put(
+                                edgeEntry.getKey(),
+                                stateMap.getOrDefault(edgeEntry.getKey(), 0) + edgeEntry.getValue()
+                        )
+                );
     }
 
     public State<T> next(Transition<T> transition) {
         Map<T, Integer> result = new HashMap<>(weights);
         performStateTransition(result, transition);
-        return new State<>(result);
+        return new State<>(filterZeros(result));
     }
 
     public int getPlaceWeight(T place) {
