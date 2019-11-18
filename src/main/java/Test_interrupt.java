@@ -1,4 +1,5 @@
-package petrinet;
+import petrinet.PetriNet;
+import petrinet.Transition;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -6,7 +7,7 @@ import java.util.concurrent.*;
 public class Test_interrupt {
 
     private static Collection<Transition<Integer>> create_transition(int origin,
-            int destination) {
+                                                                     int destination) {
         HashSet<Transition<Integer>> result = new HashSet<>();
         Map<Integer, Integer> input = new HashMap<>();
         Map<Integer, Integer> output = new HashMap<>();
