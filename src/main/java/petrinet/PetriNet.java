@@ -7,14 +7,12 @@ import java.util.concurrent.Semaphore;
 
 public class PetriNet<T> {
 
-    private CriticalState<T> state;
-    private FireManager<T> guard;
+    private final CriticalState<T> state;
+    private final FireManager<T> guard;
 
-    private boolean fair;
 
     public PetriNet(Map<T, Integer> initial, boolean fair) {
-        state = new CriticalState<>(initial);
-        this.fair = fair;
+        state = new CriticalState<>(initial, true);
         guard = new FireManager<>(state);
     }
 
@@ -25,19 +23,21 @@ public class PetriNet<T> {
 
     public Transition<T> fire(Collection<Transition<T>> transitions) throws InterruptedException {
         Semaphore mutex = guard.wantToEnter(transitions);
+
         try {
             mutex.acquire();
+
+            Transition<T> result = state.executeFire(transitions);
+
+            guard.leaveSection(transitions);
+
+            return result;
         } catch (InterruptedException e) {
-            guard.removeInterruptedThreadCollection(transitions);
+            if (!guard.isCurrentThread(transitions))
+                guard.invalidateWaiting(transitions);
+
+            guard.leaveSection(transitions);
             throw e;
         }
-
-        guard.enterSection();
-
-        Transition<T> result = state.executeFire(transitions);
-
-        guard.leaveSection(transitions);
-
-        return result;
     }
 }

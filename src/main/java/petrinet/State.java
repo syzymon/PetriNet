@@ -13,7 +13,12 @@ public class State<T> {
     }
 
     public State(State<T> toCopy) {
-        weights = new HashMap<>(toCopy.weights);
+        this(toCopy.weights);
+    }
+
+    @Override
+    public State<T> clone() {
+        return new State<>(new HashMap<>(weights));
     }
 
     static <T> Map<T, Integer> filterZeros(Map<T, Integer> initial) {
