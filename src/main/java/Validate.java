@@ -1,4 +1,5 @@
-package petrinet;
+import petrinet.PetriNet;
+import petrinet.Transition;
 
 import java.util.Arrays;
 import java.util.Collection;
