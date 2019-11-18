@@ -6,19 +6,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class State<T> {
-    protected Map<T, Integer> weights;
+    Map<T, Integer> weights;
 
-    public State(Map<T, Integer> initial) {
+    State(Map<T, Integer> initial) {
         weights = initial;
     }
 
-    public State(State<T> toCopy) {
+    State(State<T> toCopy) {
         this(toCopy.weights);
-    }
-
-    @Override
-    public State<T> clone() {
-        return new State<>(new HashMap<>(weights));
     }
 
     static <T> Map<T, Integer> filterZeros(Map<T, Integer> initial) {
@@ -27,7 +22,7 @@ public class State<T> {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public boolean isTransitionAllowed(Transition<T> transition) {
+    boolean isTransitionAllowed(Transition<T> transition) {
         return (transition.getInputEdgesEntryStream()
                 .allMatch(edgeEntry -> getPlaceWeight(edgeEntry.getKey()) >= edgeEntry.getValue())
 
@@ -37,11 +32,11 @@ public class State<T> {
                         .allMatch(forbiddenPlace -> getPlaceWeight(forbiddenPlace) == 0));
     }
 
-    public boolean isAnyTransitionAllowed(Collection<Transition<T>> transitions) {
+    boolean isAnyTransitionAllowed(Collection<Transition<T>> transitions) {
         return transitions.stream().anyMatch(this::isTransitionAllowed);
     }
 
-    protected void performStateTransition(Map<T, Integer> stateMap, Transition<T> transition) {
+    void performStateTransition(Map<T, Integer> stateMap, Transition<T> transition) {
         assert isTransitionAllowed(transition);
         transition.getInputEdgesEntryStream()
                 .forEach(edgeEntry ->
@@ -60,13 +55,14 @@ public class State<T> {
                 );
     }
 
+
     public State<T> next(Transition<T> transition) {
         Map<T, Integer> result = new HashMap<>(weights);
         performStateTransition(result, transition);
         return new State<>(filterZeros(result));
     }
 
-    public int getPlaceWeight(T place) {
+    private int getPlaceWeight(T place) {
         return weights.getOrDefault(place, 0);
     }
 

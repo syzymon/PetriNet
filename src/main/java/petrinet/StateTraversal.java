@@ -1,31 +1,32 @@
 package petrinet;
 
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-public class StateTraversal<T> {
-    private Set<State<T>> visited;
+class StateTraversal<T> {
+    private Set<Map<T, Integer>> visited;
     private Collection<Transition<T>> transitions;
+    private Queue<State<T>> queue;
 
-    public StateTraversal(State<T> source, Collection<Transition<T>> transitions) {
+    StateTraversal(State<T> source, Collection<Transition<T>> transitions) {
         this.transitions = transitions;
-        visited = new HashSet<>(List.of(source));
+        visited = new HashSet<>(List.of(source.getWeights()));
+        queue = new LinkedList<>(List.of(source));
     }
 
-    public Set<Map<T, Integer>> computeReachableStates() {
-        dfs(visited.iterator().next());
-        return visited.stream()
-                .map(State::getWeights)
-                .collect(Collectors.toSet());
+    Set<Map<T, Integer>> computeReachableStates() {
+        dfs();
+        return visited;
     }
 
-    private void dfs(State<T> currentState) {
-        transitions.stream()
-                .filter(currentState::isTransitionAllowed)
-                .map(currentState::next)
-                .filter(Predicate.not(visited::contains))
-                .peek(visited::add)
-                .forEach(this::dfs);
+    private void dfs() {
+        while(!queue.isEmpty()) {
+            State<T> currentState = queue.poll();
+            transitions.stream()
+                    .filter(currentState::isTransitionAllowed)
+                    .map(currentState::next)
+                    .filter(state -> !visited.contains(state.getWeights()))
+                    .peek(state -> visited.add(state.getWeights()))
+                    .forEach(queue::add);
+        }
     }
 }

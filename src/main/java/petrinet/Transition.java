@@ -10,26 +10,25 @@ public class Transition<T> {
     private Collection<T> reset, inhibitor;
 
     public Transition(Map<T, Integer> input, Collection<T> reset, Collection<T> inhibitor, Map<T, Integer> output) {
-        // TODO: synchronized?
         this.input = new HashMap<>(input);
         this.output = new HashMap<>(output);
         this.reset = new ArrayList<>(reset);
         this.inhibitor = new ArrayList<>(inhibitor);
     }
 
-    public Stream<Map.Entry<T, Integer>> getInputEdgesEntryStream() {
+    Stream<Map.Entry<T, Integer>> getInputEdgesEntryStream() {
         return input.entrySet().stream();
     }
 
-    public Stream<Map.Entry<T, Integer>> getOutputEdgesEntryStream() {
+    Stream<Map.Entry<T, Integer>> getOutputEdgesEntryStream() {
         return output.entrySet().stream();
     }
 
-    public Stream<T> getResetEdgesStream() {
+    Stream<T> getResetEdgesStream() {
         return reset.stream();
     }
 
-    public Stream<T> getInhibitorsStream() {
+    Stream<T> getInhibitorsStream() {
         return inhibitor.stream();
     }
 }

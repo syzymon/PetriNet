@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CriticalState<T> extends State<T> {
-    public CriticalState(Map<T, Integer> initial, boolean concurrency) {
+    CriticalState(Map<T, Integer> initial, boolean concurrency) {
         super(initial);
         var map = concurrency ? new ConcurrentHashMap<>(weights) : new HashMap<>(weights);
         weights = filterZeros(map);
     }
 
-    public void setWeightsAfterTransition(CriticalState<T> temporaryState) {
+    private void setWeightsAfterTransition(CriticalState<T> temporaryState) {
         this.weights = temporaryState.weights;
     }
 
@@ -29,7 +29,7 @@ public class CriticalState<T> extends State<T> {
     }
 
 
-    public Transition<T> executeFire(Collection<Transition<T>> transitions) {
+    Transition<T> executeFire(Collection<Transition<T>> transitions) {
         var temporaryState = new CriticalState<>(weights, false);
 
         Transition<T> allowedTransition = transitions.stream()
