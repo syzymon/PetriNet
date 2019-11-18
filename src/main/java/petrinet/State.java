@@ -69,4 +69,8 @@ public class State<T> {
     public Map<T, Integer> getWeights() {
         return weights;
     }
+
+    public void dbg() {
+        System.out.println(weights);
+    }
 }

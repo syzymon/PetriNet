@@ -42,4 +42,8 @@ public class PetriNet<T> {
             throw e;
         }
     }
+
+    public Integer getPlaceValue(T place) {
+        return state.getWeights().getOrDefault(place, 0);
+    }
 }
